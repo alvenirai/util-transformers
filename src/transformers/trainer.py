@@ -1810,6 +1810,7 @@ class Trainer:
                 rng_to_sync = True
 
             step = -1
+            self._maybe_log_save_evaluate(tr_loss, model, trial, epoch, ignore_keys_for_eval)
             for step, inputs in enumerate(epoch_iterator):
                 total_batched_samples += 1
                 if rng_to_sync:
