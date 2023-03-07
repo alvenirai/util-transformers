@@ -1762,6 +1762,7 @@ class Trainer:
                 self._load_rng_state(resume_from_checkpoint)
 
             step = -1
+            self._maybe_log_save_evaluate(tr_loss, model, trial, epoch, ignore_keys_for_eval)
             for step, inputs in enumerate(epoch_iterator):
 
                 # Skip past any already trained steps if resuming training
