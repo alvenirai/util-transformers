@@ -302,6 +302,10 @@ class TrainingArguments:
             the same names for each node.
         use_cpu (`bool`, *optional*, defaults to `False`):
             Whether or not to use cpu. If set to False, we will use cuda or mps device if available.
+        also_save_before_eval (`bool`, *optional*, defaults t0 `False`):
+            Whether to save before performing evaluation.
+        no_cuda (`bool`, *optional*, defaults to `False`):
+            Whether to not use CUDA even when it is available or not.
         seed (`int`, *optional*, defaults to 42):
             Random seed that will be set at the beginning of training. To ensure reproducibility across runs, use the
             [`~Trainer.model_init`] function to instantiate the model if it has some randomly initialized parameters.
@@ -819,6 +823,14 @@ class TrainingArguments:
         default=False,
         metadata={
             "help": " Whether or not to use cpu. If set to False, we will use cuda/tpu/mps/npu device if available."
+        },
+    )
+    also_save_before_eval: bool = field(
+        default=False,
+        metadata={
+            "help": (
+                "When saving and evaluation at same step, whether to also save checkpoint before evaluation."
+            )
         },
     )
     use_mps_device: bool = field(
