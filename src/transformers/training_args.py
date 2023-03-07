@@ -279,6 +279,8 @@ class TrainingArguments:
 
             This should not be activated when the different nodes use the same storage as the files will be saved with
             the same names for each node.
+        also_save_before_eval (`bool`, *optional*, defaults t0 `False`):
+            Whether to save before performing evaluation.
         no_cuda (`bool`, *optional*, defaults to `False`):
             Whether to not use CUDA even when it is available or not.
         seed (`int`, *optional*, defaults to 42):
@@ -689,6 +691,14 @@ class TrainingArguments:
             "help": (
                 "When doing multi-node distributed training, whether to save models and checkpoints on each node, or"
                 " only on the main one"
+            )
+        },
+    )
+    also_save_before_eval: bool = field(
+        default=False,
+        metadata={
+            "help": (
+                "When saving and evaluation at same step, whether to also save checkpoint before evaluation."
             )
         },
     )

@@ -2119,6 +2119,10 @@ class Trainer:
             self.log(logs)
 
         metrics = None
+        if self.control.should_save and self.args.also_save_before_eval:
+            self._save_checkpoint(model, trial, metrics=metrics)
+            self.control = self.callback_handler.on_save(self.args, self.state, self.control)
+
         if self.control.should_evaluate:
             if isinstance(self.eval_dataset, dict):
                 for eval_dataset_name, eval_dataset in self.eval_dataset.items():
@@ -2132,7 +2136,7 @@ class Trainer:
             self._report_to_hp_search(trial, self.state.global_step, metrics)
 
         if self.control.should_save:
-            self._save_checkpoint(model, trial, metrics=metrics)
+            self._save_checkpoint(model, trial, metrics=metrics, save_model=not self.args.also_save_before_eval)
             self.control = self.callback_handler.on_save(self.args, self.state, self.control)
 
     def _load_rng_state(self, checkpoint):
@@ -2176,7 +2180,7 @@ class Trainer:
         if is_torch_tpu_available():
             xm.set_rng_state(checkpoint_rng_state["xla"])
 
-    def _save_checkpoint(self, model, trial, metrics=None):
+    def _save_checkpoint(self, model, trial, metrics=None, save_model=True):
         # In all cases, including ddp/dp/deepspeed, self.model is always a reference to the model we
         # want to save except FullyShardedDDP.
         # assert unwrap_model(model) is self.model, "internal model should be a reference to self.model"
@@ -2189,7 +2193,8 @@ class Trainer:
 
         run_dir = self._get_output_dir(trial=trial)
         output_dir = os.path.join(run_dir, checkpoint_folder)
-        self.save_model(output_dir, _internal_call=True)
+        if save_model:
+            self.save_model(output_dir, _internal_call=True)
         if self.deepspeed:
             # under zero3 model file itself doesn't get saved since it's bogus! Unless deepspeed
             # config `stage3_gather_16bit_weights_on_model_save` is True
