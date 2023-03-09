@@ -2120,9 +2120,11 @@ class Trainer:
             self.log(logs)
 
         metrics = None
+        weights_already_saved = False
         if self.control.should_save and self.args.also_save_before_eval:
             self._save_checkpoint(model, trial, metrics=metrics)
             self.control = self.callback_handler.on_save(self.args, self.state, self.control)
+            weights_already_saved = True
 
         if self.control.should_evaluate:
             if isinstance(self.eval_dataset, dict):
@@ -2137,7 +2139,7 @@ class Trainer:
             self._report_to_hp_search(trial, self.state.global_step, metrics)
 
         if self.control.should_save:
-            self._save_checkpoint(model, trial, metrics=metrics, save_model=not self.args.also_save_before_eval)
+            self._save_checkpoint(model, trial, metrics=metrics, save_model=not weights_already_saved)
             self.control = self.callback_handler.on_save(self.args, self.state, self.control)
 
     def _load_rng_state(self, checkpoint):
